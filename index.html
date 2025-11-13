@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Gempa BMKG 2025</title>
+<style>
+  body {
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f9fafb;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  .search-box {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  input[type="text"] {
+    width: 90%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  thead {
+    background: #007bff;
+    color: white;
+  }
+  th, td {
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+  th {
+    cursor: pointer;
+  }
+  tr:nth-child(even) {
+    background: #f2f2f2;
+  }
+  tr.highlight {
+    background-color: #ffe0e0 !important;
+    font-weight: bold;
+    color: #d90429;
+  }
+  @media (max-width: 600px) {
+    table, thead, tbody, th, td, tr {
+      display: block;
+    }
+    thead {
+      display: none;
+    }
+    tr {
+      margin-bottom: 15px;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+    td {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 10px;
+    }
+    td::before {
+      content: attr(data-label);
+      font-weight: bold;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>📊 Data Gempa BMKG 2025 with jeani</h1>
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 Cari wilayah atau tanggal...">
+</div>
+<table id="gempaTable">
+  <thead>
+    <tr>
+      <th onclick="sortTable(0)">No</th>
+      <th onclick="sortTable(1)">Tanggal</th>
+      <th onclick="sortTable(2)">Jam</th>
+      <th onclick="sortTable(3)">Lintang</th>
+      <th onclick="sortTable(4)">Bujur</th>
+      <th onclick="sortTable(5)">Magnitude</th>
+      <th onclick="sortTable(6)">Kedalaman</th>
+      <th onclick="sortTable(7)">Wilayah</th>
+      <th>Potensi</th>
+    </tr>
+  </thead>
+  <tbody id="gempaBody"></tbody>
+</table>
+
+<script>
+const dataGempa = [
+  {"Tanggal":"05 Nov 2025","Jam":"06:32:24 WIB","Lintang":"0.11 LS","Bujur":"123.13 BT","Magnitude":"6.2","Kedalaman":"103 km","Wilayah":"71 km BaratDaya BONEBOLANGO-GORONTALO","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"04 Nov 2025","Jam":"22:58:26 WIB","Lintang":"1.88 LU","Bujur":"127.06 BT","Magnitude":"5.1","Kedalaman":"20 km","Wilayah":"83 km BaratLaut HALMAHERABARAT-MALUT","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"03 Nov 2025","Jam":"11:21:24 WIB","Lintang":"5.11 LU","Bujur":"125.37 BT","Magnitude":"5.3","Kedalaman":"10 km","Wilayah":"167 km BaratLaut TAHUNA-KEP.SANGIHE-SULUT","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"02 Nov 2025","Jam":"10:09:21 WIB","Lintang":"7.79 LS","Bujur":"127.81 BT","Magnitude":"5.5","Kedalaman":"139 km","Wilayah":"40 km TimurLaut MALUKUBRTDAYA","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"01 Nov 2025","Jam":"11:32:33 WIB","Lintang":"1.64 LS","Bujur":"139.44 BT","Magnitude":"5.3","Kedalaman":"10 km","Wilayah":"80 km TimurLaut SARMI-PAPUA","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"01 Nov 2025","Jam":"06:20:57 WIB","Lintang":"4.44 LS","Bujur":"134.07 BT","Magnitude":"5.0","Kedalaman":"10 km","Wilayah":"128 km Tenggara KAIMANA-PAPUABRT","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"01 Nov 2025","Jam":"00:02:21 WIB","Lintang":"6.11 LS","Bujur":"133.20 BT","Magnitude":"5.1","Kedalaman":"55 km","Wilayah":"71 km Tenggara MALUKUTENGGARA","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"30 Okt 2025","Jam":"15:04:02 WIB","Lintang":"2.68 LS","Bujur":"139.44 BT","Magnitude":"5.3","Kedalaman":"52 km","Wilayah":"107 km BaratDaya KAB-JAYAPURA-PAPUA","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"28 Okt 2025","Jam":"21:40:18 WIB","Lintang":"6.81 LS","Bujur":"130.13 BT","Magnitude":"6.8","Kedalaman":"185 km","Wilayah":"183 km BaratLaut TANIMBAR","Potensi":"Tidak berpotensi tsunami"},
+  {"Tanggal":"28 Okt 2025","Jam":"08:31:20 WIB","Lintang":"1.43 LU","Bujur":"121.77 BT","Magnitude":"5.5","Kedalaman":"10 km","Wilayah":"68 km TimurLaut BUOL-SULTENG","Potensi":"Tidak berpotensi tsunami"}
+];
+
+function tampilkanData() {
+  const tbody = document.getElementById("gempaBody");
+  tbody.innerHTML = "";
+  dataGempa.forEach((g, i) => {
+    const tr = document.createElement("tr");
+    if (parseFloat(g.Magnitude) >= 6.0) tr.classList.add("highlight");
+    tr.innerHTML = `
+      <td data-label="No">${i+1}</td>
+      <td data-label="Tanggal">${g.Tanggal}</td>
+      <td data-label="Jam">${g.Jam}</td>
+      <td data-label="Lintang">${g.Lintang}</td>
+      <td data-label="Bujur">${g.Bujur}</td>
+      <td data-label="Magnitude">${g.Magnitude}</td>
+      <td data-label="Kedalaman">${g.Kedalaman}</td>
+      <td data-label="Wilayah">${g.Wilayah}</td>
+      <td data-label="Potensi">${g.Potensi}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+tampilkanData();
+
+// 🔍 Fitur pencarian
+document.getElementById("searchInput").addEventListener("keyup", function() {
+  const keyword = this.value.toLowerCase();
+  const rows = document.querySelectorAll("#gempaBody tr");
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(keyword) ? "" : "none";
+  });
+});
+
+// 🔁 Fitur sort kolom
+function sortTable(n) {
+  const table = document.getElementById("gempaTable");
+  let switching = true, dir = "asc", switchcount = 0;
+  while (switching) {
+    switching = false;
+    const rows = table.rows;
+    for (let i = 1; i < rows.length - 1; i++) {
+      let shouldSwitch = false;
+      let x = rows[i].getElementsByTagName("TD")[n];
+      let y = rows[i + 1].getElementsByTagName("TD")[n];
+      let xVal = x.textContent || x.innerText;
+      let yVal = y.textContent || y.innerText;
+      if (!isNaN(xVal) && !isNaN(yVal)) { xVal = parseFloat(xVal); yVal = parseFloat(yVal); }
+      if (dir === "asc" ? xVal > yVal : xVal < yVal) {
+        shouldSwitch = true; break;
+      }
+    }
+    if (shouldSwitch) {
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      switchcount++;
+    } else if (switchcount === 0 && dir === "asc") {
+      dir = "desc"; switching = true;
+    }
+  }
+}
+</script>
+</body>
+</html>
